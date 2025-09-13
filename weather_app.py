@@ -1,7 +1,11 @@
 import requests
 import json
+from dotenv import load_dotenv
+import os
 
-API_KEY = "API_KEY"
+# Load environment variables from .env
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
 
