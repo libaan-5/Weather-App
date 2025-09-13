@@ -1,14 +1,15 @@
 import requests
+import json
 
-API_KEY = "WEATHER_API_KEY"
+API_KEY = "25206f1d1b4416d322619860212c6962"
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
 
-def get_weather(city):
+def get_weather(city, country_code=None, units=None): 
     params = {
-        "q": city,
+        "q": f"{city},{country_code}" if country_code else city,
         "appid": API_KEY,
-        "units": "metric"  # Celsius
+        "units": units  # Celsius
     }
     response = requests.get(BASE_URL, params=params)
     
@@ -16,10 +17,14 @@ def get_weather(city):
     if response.status_code == 200:
         data = response.json()
         name = data["name"]
+        country = data["sys"]["country"]
         temp = data["main"]["temp"]
         weather = data["weather"][0]["description"]
-        print(f"Weather in {name}: {weather}, Temperature: {temp}°C")
+        unit_symbol = "°C" if units == "metric" else "°F" if units == "imperial" else "K"
+        print(f"Country: {country}, Weather in {name}: {weather}, Temperature: {temp}{unit_symbol}\n")
         
+        # print(json.dumps(data, indent=4))
+
     # Error messages below    
     elif response.status_code == 400:
         print("Error 400: Bad request (maybe missing parameters or invalid query).")
@@ -34,11 +39,31 @@ def get_weather(city):
 
 def main():
     while True:
-        city = input("Enter city name (or 'quit' to exit): ").strip() # Eliminates white-space (before or after input)
-        if city.lower() in ["quit", "exit"]:
+        user_input = input("Enter city name (optionally with country code, e.g., 'London,US') or 'quit' to exit: ").strip() # Eliminates white-space (before or after input)
+
+        parts = [p.strip() for p in user_input.split(",")]
+
+        city = parts[0]
+        country_code = None
+        units = "metric"  # default Celsius
+
+        symbols = {'C': 'metric', 'F': 'imperial', 'K': None}
+
+        if len(parts) >= 2:
+            if parts[1] in symbols:
+                units = symbols[parts[1]]
+            else:
+                country_code = parts[1]
+
+        if len(parts) >= 3 and parts[2] in symbols:
+            units = symbols[parts[2]]
+
+        if user_input.lower() in ["quit", "exit"]:
             print("Goodbye! 👋")
             break
-        get_weather(city)
+        get_weather(city, country_code, units)
+
 
 if __name__ == "__main__":
     main()
+    
