@@ -1,7 +1,7 @@
 import requests
 import json
 
-API_KEY = "25206f1d1b4416d322619860212c6962"
+API_KEY = "API_KEY"
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
 
@@ -66,4 +66,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
